@@ -24,8 +24,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'   # ok even without a lockfile
+          node-version: 20  # no cache here
 
       - name: Install
         run: npm install --no-audit --no-fund
