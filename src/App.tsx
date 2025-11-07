@@ -1,0 +1,399 @@
+import { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
+import { Mail, Phone, ExternalLink } from "lucide-react";
+
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+
+const Section = ({
+  id,
+  title,
+  children,
+}: {
+  id: string;
+  title: string;
+  children: React.ReactNode;
+}) => (
+  <section id={id} className="scroll-mt-24 max-w-6xl mx-auto px-5 py-10">
+    <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-amber-700 text-right">
+      {title}
+    </h2>
+    {children}
+  </section>
+);
+
+const Tag = ({ children }: { children: React.ReactNode }) => (
+  <Badge className="mr-2 mb-2 text-xs rounded-2xl px-3 py-1 bg-amber-200 text-amber-900">
+    {children}
+  </Badge>
+);
+
+const PROJECTS = [
+  {
+    name: "Nick Academy",
+    desc: "אפליקציה לילדים מבית ניקולודאון ללימוד מקצועות ליבה דרך משחקים.",
+    contrib: "מפתח בצוות הליבה, מאפס להשקה ולתחזוק",
+    link: "https://nick.academy/he/",
+    tags: ["App", "Games", "Education", "Unity"],
+  },
+  {
+    name: "Nick Watch",
+    desc: "שעון חכם לילדים הכולל משחקים ופיצ'רים לבטיחות.",
+    contrib: "QA ועיצוב פיצ'רים",
+    link: "https://nickwatch.co.il/",
+    tags: ["Wearable", "Games", "QA", "Design"],
+  },
+  {
+    name: "תערוכת משחקי רחוב (מגדל דוד)",
+    desc: "תערוכה משחקית לעיצוב בתים מ-6 רחובות ירושלמיים.",
+    contrib: "פיתוח מקצה לקצה על בסיס עיצוב האוצרות",
+    link: "https://www.tod.org.il/event/streetgames/",
+    tags: ["Exhibit", "Interactive", "Lead Dev"],
+  },
+  {
+    name: "אוצר מילים – הספריה הלאומית",
+    desc: "תערוכת קבע אינטראקטיבית באולם הראשי.",
+    contrib: "אפיון ארכיטקטורה, הובלת צוות ופיתוח פרוטוטייפים",
+    link: "https://www.nli.org.il/he/visit/exhibitions-and-displays",
+    tags: ["Exhibit", "Interactive", "Architecture"],
+  },
+];
+
+const EXPERIENCE = [
+  {
+    org: "Freelance",
+    role: "Unity Developer / Game Designer / QA",
+    period: "2024 – הווה",
+    points: ["שירותי פיתוח ועיצוב לפרויקטים ומשחקים שונים"],
+  },
+  {
+    org: "Beta – Rimon Studio",
+    role: "Unity Developer / Game Designer / QA",
+    period: "2020 – 2024",
+    points: [
+      "פיתוח בצוותים שונים והובלת תהליכי פיתוח במוזיאונים",
+      "בקרת איכות ועיצוב עבור מגוון מוצרים",
+    ],
+  },
+];
+
+const SKILLS = {
+  code: ["C#", "Unity", "Git", "BitBucket"],
+  design: ["Game Design", "Level Design", "Feature Spec", "QA"],
+  tools: ["Figma", "Jira", "Monday", "Excel"],
+  langs: ["עברית", "English", "日本語"],
+};
+
+export default function App() {
+  const filtered = useMemo(() => PROJECTS, []);
+  const [tab, setTab] = useState<"experience" | "projects">("experience");
+
+  // Wire up TabsTrigger clicks (our stub emits a <button data-tab-value="...">)
+  useEffect(() => {
+    const triggers = Array.from(
+      document.querySelectorAll<HTMLButtonElement>("[data-tab-value]")
+    );
+    const handler = (e: Event) => {
+      const btn = e.currentTarget as HTMLButtonElement;
+      const v = btn.getAttribute("data-tab-value");
+      if (v === "experience" || v === "projects") setTab(v);
+    };
+    triggers.forEach((b) => b.addEventListener("click", handler));
+    return () => triggers.forEach((b) => b.removeEventListener("click", handler));
+  }, []);
+
+  const scrollToWorkOffset = () => {
+    const section = document.getElementById("work");
+    if (section) {
+      const offset = section.offsetTop - 100; // stop a bit above the title
+      window.scrollTo({ top: offset, behavior: "smooth" });
+    }
+  };
+
+  const handleNavClick = (target: "experience" | "projects") => {
+    setTab(target);
+    scrollToWorkOffset();
+  };
+
+  const handleHeaderClick = (target: string) => {
+    if (target === "experience" || target === "projects") {
+      setTab(target);
+      scrollToWorkOffset();
+      return;
+    }
+    const el = document.getElementById(target);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  return (
+    <div className="min-h-screen text-neutral-900 bg-gradient-to-b from-amber-100 via-orange-50 to-neutral-200">
+      {/* Top Nav */}
+      <nav className="sticky top-0 z-50 backdrop-blur bg-white/80 border-b border-neutral-200">
+        <div className="max-w-6xl mx-auto px-5 py-3 flex items-center justify-between gap-4">
+          <a href="#home" className="font-bold">
+            ניצן טייכהולץ - קורות חיים
+          </a>
+          <div className="hidden md:flex items-center gap-4 text-sm" dir="rtl">
+            <button
+              onClick={() => handleHeaderClick("about")}
+              className="hover:text-amber-700"
+            >
+              תקציר
+            </button>
+            <button
+              onClick={() => handleHeaderClick("experience")}
+              className="hover:text-amber-700"
+            >
+              ניסיון
+            </button>
+            <button
+              onClick={() => handleHeaderClick("projects")}
+              className="hover:text-amber-700"
+            >
+              פרויקטים
+            </button>
+            <button
+              onClick={() => handleHeaderClick("skills")}
+              className="hover:text-amber-700"
+            >
+              מיומנויות
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero */}
+      <header id="home" className="relative overflow-hidden pt-20">
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-300 via-orange-200 to-transparent -z-10" />
+        <div className="max-w-6xl mx-auto px-5 py-16 md:py-24 grid md:grid-cols-2 gap-10 items-center">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h1 className="text-4xl md:text-5xl font-extrabold leading-tight mb-3">
+              Unity Developer & Game Designer
+            </h1>
+            <p className="text-neutral-700">Creating Interactive Experiences with Heart</p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Tag>Unity</Tag>
+              <Tag>Game Design</Tag>
+              <Tag>Interactive Exhibits</Tag>
+              <Tag>QA</Tag>
+            </div>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="md:justify-self-end"
+          >
+            <Card className="shadow-2xl rounded-2xl">
+              <CardContent className="p-6 text-right" dir="rtl">
+                <div className="text-sm space-y-2 text-right" dir="rtl">
+                  <div className="font-semibold">פרטים אישיים</div>
+                  <div>תפקיד: מפתח Unity ומעצב משחקים</div>
+                  <div className="flex flex-row-reverse items-center gap-2 justify-end text-right">
+                    <Phone className="h-5 w-5" /> +81-70-9153-5856
+                  </div>
+                  <a
+                    className="flex flex-row-reverse items-center justify-end gap-2 hover:underline"
+                    href="mailto:nizantei@gmail.com"
+                  >
+                    <Mail className="h-5 w-5" /> nizantei@gmail.com
+                  </a>
+                  <a
+                    href="https://www.linkedin.com/in/nitsan-teichholtz-6834801a4"
+                    target="_blank"
+                    className="inline-flex flex-row-reverse items-center gap-1 justify-end text-amber-700 hover:underline"
+                  >
+                    <span>LinkedIn</span> <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </header>
+
+      {/* About */}
+      <Section id="about" title="תקציר אישי">
+        <div dir="rtl" className="text-right">
+          <p className="max-w-3xl leading-relaxed ml-auto">
+            שמי ניצן, אני מעצב ומפתח עם תשוקה גדולה למשחקים ולאינטרקטיב. בעקבות נסיוני המקצועי בחברת מוצר, אני בעל הבנה טובה
+            של עבודת צוות רב-תחומית. הובלתי והקמתי תערוכות אינטראקטיביות, לעיתים כמוביל פיתוח ולעיתים כמפתח בפועל. אני מאמין
+            בתהליך עבודה מסודר עם גבולות, יעדים ברורים, גזירת משימות ולמידה מתמדת.
+          </p>
+        </div>
+      </Section>
+
+      {/* Work (Tabs) */}
+      <Section id="work" title="עבודות ופרויקטים">
+        <div dir="rtl" className="text-right">
+          <Tabs value={tab} onValueChange={(v) => setTab(v as "experience" | "projects")} className="w-full">
+            <div className="w-full flex justify-center mt-2">
+              <TabsList className="flex gap-2 bg-amber-100/80 p-1 rounded-2xl shadow ring-1 ring-amber-300/70">
+                <TabsTrigger
+                  value="experience"
+                  className={`px-6 py-3 text-base font-semibold rounded-xl ${
+                    tab === "experience" ? "bg-amber-500 text-white" : ""
+                  }`}
+                >
+                  ניסיון
+                </TabsTrigger>
+                <TabsTrigger
+                  value="projects"
+                  className={`px-6 py-3 text-base font-semibold rounded-xl ${
+                    tab === "projects" ? "bg-amber-500 text-white" : ""
+                  }`}
+                >
+                  פרויקטים
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            <TabsContent value="experience" current={tab} className="pt-6">
+              <div id="experience" className="grid md:grid-cols-2 gap-6">
+                {EXPERIENCE.map((item, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 8 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: idx * 0.06 }}
+                  >
+                    <Card className="rounded-2xl hover:shadow-lg transition-shadow border border-neutral-300">
+                      <CardContent className="p-5 text-right" dir="rtl">
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <h3 className="font-bold text-lg">{item.org}</h3>
+                            <div className="text-sm text-neutral-600">{item.period}</div>
+                          </div>
+                        </div>
+                        <div className="mt-2 text-sm font-medium">{item.role}</div>
+                        <ul className="mt-3 text-sm list-disc list-inside space-y-1" dir="rtl">
+                          {item.points.map((p, i) => (
+                            <li key={i}>{p}</li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="projects" current={tab} className="pt-6">
+              <div id="projects" className="space-y-6">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filtered.map((p, i) => (
+                    <motion.div
+                      key={p.name}
+                      initial={{ opacity: 0, y: 8 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.35, delay: i * 0.05 }}
+                    >
+                      <Card className="group rounded-2xl overflow-hidden border border-neutral-300 hover:shadow-xl transition-shadow">
+                        <CardContent className="p-5 text-right" dir="rtl">
+                          <div className="flex items-center justify-start">
+                            <h3 className="font-semibold text-lg">{p.name}</h3>
+                          </div>
+                          <div className="mt-3 space-y-2">
+                            <div className="text-xs font-semibold tracking-wide text-amber-700">תיאור</div>
+                            <p className="text-sm leading-relaxed text-neutral-800">{p.desc}</p>
+                            <div className="h-px bg-gradient-to-l from-amber-200 to-transparent my-2" />
+                            <div className="text-xs font-semibold tracking-wide text-amber-700">תרומה</div>
+                            <p className="text-sm leading-relaxed text-neutral-800">{p.contrib}</p>
+                          </div>
+                          <div className="mt-3 flex flex-wrap justify-end">
+                            {p.tags.map((t) => (
+                              <Tag key={t}>{t}</Tag>
+                            ))}
+                          </div>
+                          <a
+                            href={p.link}
+                            target="_blank"
+                            className="mt-4 inline-flex items-center gap-1 text-amber-700 hover:underline"
+                          >
+                            קישור לפרויקט <ExternalLink className="h-4 w-4" />
+                          </a>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </Section>
+
+      {/* Skills */}
+      <Section id="skills" title="מיומנויות">
+        <div dir="rtl" className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 text-sm text-right">
+          <Card>
+            <CardContent className="p-5">
+              <div className="font-semibold mb-2">תכנות</div>
+              <div className="flex flex-wrap justify-end">
+                {SKILLS.code.map((s) => (
+                  <Tag key={s}>{s}</Tag>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-5">
+              <div className="font-semibold mb-2">עיצוב משחק</div>
+              <div className="flex flex-wrap justify-end">
+                {SKILLS.design.map((s) => (
+                  <Tag key={s}>{s}</Tag>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-5">
+              <div className="font-semibold mb-2">תוכנות</div>
+              <div className="flex flex-wrap justify-end">
+                {SKILLS.tools.map((s) => (
+                  <Tag key={s}>{s}</Tag>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-5">
+              <div className="font-semibold mb-2">שפות</div>
+              <div className="flex flex-wrap justify-end">
+                {SKILLS.langs.map((s) => (
+                  <Tag key={s}>{s}</Tag>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </Section>
+
+      {/* Footer buttons (duplicate tab controls with scroll) */}
+      <footer className="text-center py-10 text-xs text-neutral-500 relative">
+        <div className="mb-4 flex justify-center gap-3">
+          <button
+            onClick={() => handleNavClick("experience")}
+            className="px-5 py-2 bg-amber-500 text-white rounded-xl text-sm font-semibold hover:bg-amber-600 transition-colors"
+          >
+            ניסיון
+          </button>
+          <button
+            onClick={() => handleNavClick("projects")}
+            className="px-5 py-2 bg-amber-500 text-white rounded-xl text-sm font-semibold hover:bg-amber-600 transition-colors"
+          >
+            פרויקטים
+          </button>
+        </div>
+        © {new Date().getFullYear()} Nitsan Teichholtz — Built with React • Vite • Tailwind • GitHub Pages
+      </footer>
+    </div>
+  );
+}
